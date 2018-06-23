@@ -16,3 +16,32 @@ exports.getGroceryList = functions.https.onRequest((request, response) => {
         });
     });
 });
+
+exports.updateGroceryList = functions.https.onRequest((request, response) => {
+    cors(request, response, () => { });
+    const data = request.body;
+    console.log(data);
+    if (!data || (data && !data.item_name)) {
+        return response.send(400, {
+            data: "Invalid params",
+            success: false
+        });
+    } else {
+        return admin.database().ref('/list').child(data.item_name).update({
+            name: data.item_name,
+            links: data.links
+        }, (error) => {
+            if (error) {
+                return response.send(400, {
+                    data: error,
+                    success: false
+                });
+            } else {
+                return response.send({
+                    data: "Success",
+                    success: true
+                });
+            }
+        });
+    }
+});
